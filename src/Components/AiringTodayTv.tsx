@@ -1,18 +1,15 @@
 import { useQuery } from "@tanstack/react-query";
 import styled from "styled-components";
 import { motion, AnimatePresence, useScroll } from "framer-motion";
-import { getTopRatedTv, IGetMoviesResult } from "../api";
+import { getAiringTv, IGetMoviesResult } from "../api";
 import { makeImagePath } from "../utils";
 import { useState } from "react";
 import { PathMatch, useMatch, useNavigate } from "react-router-dom";
 import { RxChevronLeft, RxChevronRight } from "react-icons/rx";
-import AiringTodayTv from "../Components/AiringTodayTv";
-import OnTheAirTv from "../Components/OnTheAirTv";
-import PopularTv from "../Components/PopularTv";
 
 const Wrapper = styled.div`
   background: black;
-  padding-bottom: 200px;
+  padding-top: 20px;
 `;
 
 const Loader = styled.div`
@@ -20,27 +17,6 @@ const Loader = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-`;
-
-const Banner = styled.div<{ bgPhoto: string }>`
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  padding: 60px;
-  background-image: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 1)),
-    url(${props => props.bgPhoto});
-  background-size: cover;
-`;
-
-const Title = styled.h2`
-  font-size: 68px;
-  margin-bottom: 20px;
-`;
-
-const Overview = styled.p`
-  font-size: 30px;
-  width: 50%;
 `;
 
 const CategoryWrap = styled.div`
@@ -215,14 +191,14 @@ const infoVariants = {
 
 const offset = 6;
 
-function Tv() {
+function AiringTodayTv() {
   const navigate = useNavigate();
   const tvMatch: PathMatch<string> | null = useMatch("/tv/:tvId");
 
   const { scrollY } = useScroll();
   const { data, isLoading } = useQuery<IGetMoviesResult>(
-    ["topRatedTv"],
-    getTopRatedTv,
+    ["airingTv"],
+    getAiringTv,
     { retry: false }
   );
   const [index, setIndex] = useState(0);
@@ -262,15 +238,8 @@ function Tv() {
           <Loader>Loading...</Loader>
         ) : (
           <>
-            <Banner
-              bgPhoto={makeImagePath(data?.results[0].backdrop_path || "")}
-            >
-              <Title>{data?.results[0].title}</Title>
-              <Overview>{data?.results[0].overview}</Overview>
-            </Banner>
-
             <CategoryWrap>
-              <SliderName>TOP RATED</SliderName>
+              <SliderName>AIRING TODAY</SliderName>
               <div
                 style={{
                   display: "flex",
@@ -337,10 +306,10 @@ function Tv() {
                         <BigCover
                           style={{
                             backgroundImage: `linear-gradient(to top, black, transparent),
-                          url(${makeImagePath(
-                            clickedTv.backdrop_path,
-                            "w500"
-                          )})`,
+                            url(${makeImagePath(
+                              clickedTv.backdrop_path,
+                              "w500"
+                            )})`,
                           }}
                         />
                         <BigTitle>{clickedTv.title}</BigTitle>
@@ -367,10 +336,8 @@ function Tv() {
           </>
         )}
       </Wrapper>
-      <AiringTodayTv />
-      <OnTheAirTv />
-      <PopularTv />
     </>
   );
 }
-export default Tv;
+
+export default AiringTodayTv;
